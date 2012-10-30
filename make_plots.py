@@ -139,8 +139,8 @@ for period, vh_combined in [('78', vh_7and8), ('7', vh_7TeV), ('8', vh_8TeV)]:
     channels['llt']['fakes'] = Style(Getter(llt_combined, 'fakes', 'Non-prompt'), **fakes)
     channels['llt']['signal'] = Title(ScaleView(Style(
         Sum(
-            Getter(llt_combined, 'VH125'),
-            Getter(llt_combined, 'VH_hww125'),
+            Getter(llt_combined, 'WH125'),
+            Getter(llt_combined, 'WH_hww125'),
         ), **signal), sigscale),
         signal_label)
     channels['llt']['obs'] = Style(Getter(llt_combined, 'data_obs', "Observed"), **data)
@@ -156,8 +156,8 @@ for period, vh_combined in [('78', vh_7and8), ('7', vh_7TeV), ('8', vh_8TeV)]:
     channels['zh']['fakes'] = Style(Getter(zh_combined, 'Zjets', 'Non-prompt'), **fakes)
     channels['zh']['signal'] = Title(ScaleView(Style(
         Sum(
-            Getter(zh_combined, 'VH125'),
-            Getter(zh_combined, 'VH_hww125'),
+            Getter(zh_combined, 'ZH_htt125'),
+            Getter(zh_combined, 'ZH_hww125'),
         ), **signal), sigscale),
         signal_label)
     channels['zh']['obs'] = Style(Getter(zh_combined, 'data_obs', "Observed"), **data)
@@ -196,7 +196,7 @@ for period, vh_combined in [('78', vh_7and8), ('7', vh_7TeV), ('8', vh_8TeV)]:
     llt.GetHistogram().GetYaxis().SetTitle("Events")
     llt_data = channels['llt']['obs'].Get(None)
     llt.GetHistogram().GetYaxis().SetTitle("Events/%i GeV" % llt_data.GetBinWidth(1))
-    #llt_data.Draw('same, pe')
+    llt_data.Draw('same, pe')
     blurb = add_cms_blurb('7-8', '17', blurb=' ll#tau_{h}')
     vh_legend.AddEntry(llt_data)
     vh_legend.AddEntry(llt)
@@ -227,7 +227,7 @@ for period, vh_combined in [('78', vh_7and8), ('7', vh_7TeV), ('8', vh_8TeV)]:
     zh.GetHistogram().GetYaxis().SetTitle("Events")
     blurb = add_cms_blurb('7-8', '17', blurb='llLL')
     zh_data = channels['zh']['obs'].Get(None)
-    #zh_data.Draw('same, pe')
+    zh_data.Draw('same, pe')
     zh.GetHistogram().GetYaxis().SetTitle("Events/%i GeV" % zh_data.GetBinWidth(1))
     vh_legend.AddEntry(zh_data)
     vh_legend.AddEntry(zh)

@@ -29,8 +29,8 @@ llt_exclude = None
 yields['llt']['wz'] = megacard.get_rate('llt*', 'wz', excludebin=llt_exclude)
 yields['llt']['zz'] = megacard.get_rate('llt*', 'zz', excludebin=llt_exclude)
 yields['llt']['fakes'] = megacard.get_rate('llt*', 'fakes', excludebin=llt_exclude)
-yields['llt']['VH'] = megacard.get_rate('llt*', 'VH', excludebin=llt_exclude)
-yields['llt']['VHww'] = megacard.get_rate('llt*', 'VH_hww', excludebin=llt_exclude)
+yields['llt']['VH'] = megacard.get_rate('llt*', 'WH', excludebin=llt_exclude)
+yields['llt']['VHww'] = megacard.get_rate('llt*', 'WH_hww', excludebin=llt_exclude)
 yields['llt']['total'] = yields['llt']['wz'] + yields['llt']['zz'] + yields['llt']['fakes']
 yields['llt']['obs'] = megacard.get_obs('llt*')
 
@@ -43,13 +43,13 @@ yields['llt']['obs'] = megacard.get_obs('llt*')
 
 yields['zh']['zz'] = megacard.get_rate('ZH*', 'ZZ')
 yields['zh']['fakes'] = megacard.get_rate('ZH*', 'Zjets')
-yields['zh']['VH'] = megacard.get_rate('ZH*', 'VH')
-yields['zh']['VHww'] = megacard.get_rate('ZH*', 'VH_hww')
+yields['zh']['VH'] = megacard.get_rate('ZH*', 'ZH_htt')
+yields['zh']['VHww'] = megacard.get_rate('ZH*', 'ZH_hww')
 yields['zh']['total'] = yields['zh']['zz'] + yields['zh']['fakes']
 yields['zh']['obs'] = megacard.get_obs('ZH*')
 
-yields['zh']['obs'] = 0
-yields['llt']['obs'] = 0
+#yields['zh']['obs'] = 0
+#yields['llt']['obs'] = 0
 
 def render(the_yield):
     if isinstance(the_yield, int):
@@ -57,7 +57,7 @@ def render(the_yield):
     elif isinstance(the_yield, float):
         return "%0.f" % the_yield
     return r'$ %s \pm %s $' % sigfigs.sigfigs(
-        the_yield.nominal_value, the_yield.std_dev(), 2, -2)
+        the_yield.nominal_value, the_yield.std_dev(), 2, -1)
 
 # flatten dictionary and stringify yields
 flat = {}

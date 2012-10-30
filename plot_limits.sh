@@ -12,7 +12,7 @@ plot asymptotic $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vh
 #cp 4l_sm.pdf 4l_sm_asymp.pdf
 
 root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_limit.root", "cmb,4l,llt", true, false, "sm-xsex", 0, 15, false,"  Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=17 fb^{-1}")'
-#root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_sm.root", "cmb,tt,4l,llt", false, true, "sm-xsex", 0, 20, false)'
+root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_limit.root", "cmb,4l,llt", false, true, "sm-xsex", 0, 15, false,"  Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=17 fb^{-1}")'
 
 #cd ../ALL-LIMITS
 #plot asymptotic $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_htt_layout.py cmb
