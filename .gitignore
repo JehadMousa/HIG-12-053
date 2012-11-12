@@ -29,3 +29,7 @@ pip-log.txt
 *.tex
 *.pdf
 *.tgz
+
+*.png
+
+VHTT
