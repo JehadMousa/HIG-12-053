@@ -1,4 +1,20 @@
-HIG-12-051
+HIG-12-053
 ==========
 
-Scripts/helpers for 2012 VHtautau PAS
+Scripts for 2013 VH tau Moriond PAS
+
+Installation
+------------
+
+Install the HiggsToTauTau limit package
+
+
+```shell
+cmsrel CMSSW_5_2_5
+cd CMSSW_5_2_5/src/
+cmsenv
+cvs co -r V02-02-08 HiggsAnalysis/CombinedLimit
+cvs co -r V00-03-00 HiggsAnalysis/HiggsToTauTau
+python HiggsAnalysis/HiggsToTauTau/scripts/init.py --tag V00-01-00
+scram b -j 4; rehash
+```
