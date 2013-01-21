@@ -1,12 +1,8 @@
 #!/bin/bash
 
+# Run the ML fit and compute all in the information for the pulls.
 
-cd NEW-LIMITS/cmb
-# Move the 140 GeV mass point to separate directory
-rm -rf pulls
-cp -r 140 pulls
-
-cd pulls
+pushd pulls/125
 
 combineCards.py *.txt > everything.txt
 
@@ -22,3 +18,5 @@ do
   python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py mlfit.root -g $name.pulls.png > $name.pulls.txt
   mv mlfit.root $card.fit.root
 done
+
+popd
