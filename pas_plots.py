@@ -196,7 +196,7 @@ if __name__ == "__main__":
     )
 
     def make_legend():
-        output = ROOT.TLegend(0.5, 0.6, 0.90, 0.93, "", "brNDC")
+        output = ROOT.TLegend(0.45, 0.6, 0.89, 0.93, "", "brNDC")
         output.SetLineWidth(0)
         output.SetLineStyle(0)
         output.SetFillStyle(0)
@@ -303,8 +303,10 @@ if __name__ == "__main__":
 
     # Apply some styles to all the histograms
     for channel in ['llt', 'zh', 'ltt']:
-        # Use poissonian error bars.
-        histograms[channel]['poisson'] = convert(histograms[channel]['data'])
+        # Use Poissonian error bars. The set_zero_bins makes it so bins w/o
+        # any data are blank.
+        histograms[channel]['poisson'] = convert(histograms[channel]['data'],
+                                                 set_zero_bins=-10)
         # Make sure all data points are visible
         fix_maximum(histograms[channel])
         # We have to draw it so things like the axes are initialized.
