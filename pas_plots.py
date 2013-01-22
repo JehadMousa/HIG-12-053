@@ -17,16 +17,17 @@ postfit_src = os.path.join(os.environ['CMSSW_BASE'],
                            'root_postfit')
 
 
-def get_real_maximum(histo):
-    """ Get the real maximum of a histogram, including bin errors """
-    max = 0
+def fix_maximum(channel_dict, cushion=1.1):
+    """ Make sure everything is visible """
+    max = channel_dict['stack'].GetMaximum()
+    histo = channel_dict['data']
     for bin in range(histo.GetNbinsX()):
         content = histo.GetBinContent(bin)
         upper = content + math.sqrt(content)
         #print bin, upper, max
         if upper > max:
             max = upper
-    return max
+    channel_dict['stack'].SetMaximum(cushion * max)
 
 
 def add_cms_blurb(sqrts, intlumi, preliminary=True, blurb=''):
@@ -49,7 +50,7 @@ _styles = {
         # Same as Z+jets
         'fillstyle': 1001,
         #'fillcolor': '#FFCC66',
-        'fillcolor': ROOT.EColor.kRed,
+        'fillcolor': ROOT.EColor.kOrange - 4,
         'linecolor': ROOT.EColor.kBlack,
         'linewidth': 3,
     },
@@ -57,14 +58,14 @@ _styles = {
         # Same as W+jets
         'fillstyle': 1001,
         #'fillcolor': '#990000',
-        'fillcolor': ROOT.EColor.kBlue,
+        'fillcolor': ROOT.EColor.kRed + 2,
         'linecolor': ROOT.EColor.kBlack,
         'linewidth': 3,
     },
     "fakes": {
         # Same as QCD
         #'fillcolor': '#FFCCFF',
-        'fillcolor': ROOT.EColor.kGreen,
+        'fillcolor': ROOT.EColor.kMagenta - 10,
         'linecolor': ROOT.EColor.kBlack,
         'fillstyle': 1001,
         'linewidth': 3,
@@ -144,7 +145,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-
     prefit_7TeV_file = ROOT.TFile.Open(
         "limits/cmb/common/vhtt.input_7TeV.root")
     prefit_8TeV_file = ROOT.TFile.Open(
@@ -195,21 +195,28 @@ if __name__ == "__main__":
         title='data', style='data'
     )
 
-    histograms['llt']['stack'] = ROOT.THStack("llt_stack", "llt_stack")
-    histograms['llt']['stack'].Add(histograms['llt']['zz'])
-    histograms['llt']['stack'].Add(histograms['llt']['fakes'])
-    histograms['llt']['stack'].Add(histograms['llt']['wz'])
-    histograms['llt']['stack'].Add(histograms['llt']['signal'])
+    def make_legend():
+        output = ROOT.TLegend(0.6, 0.6, 0.95, 0.95, "", "brNDC")
+        output.SetLineWidth(0)
+        output.SetLineStyle(0)
+        output.SetFillStyle(0)
+        return output
 
-    histograms['llt']['legend'] = ROOT.TLegend(0.7, 0.9, 0.6, 0.9, "", "brNDC")
-    histograms['llt']['legend'].AddEntry(histograms['llt']['zz'], "ZZ")
+    histograms['llt']['stack'] = ROOT.THStack("llt_stack", "llt_stack")
+    histograms['llt']['stack'].Add(histograms['llt']['zz'], 'hist')
+    histograms['llt']['stack'].Add(histograms['llt']['fakes'], 'hist')
+    histograms['llt']['stack'].Add(histograms['llt']['wz'], 'hist')
+    histograms['llt']['stack'].Add(histograms['llt']['signal'], 'hist')
+
+    histograms['llt']['legend'] = make_legend()
+    histograms['llt']['legend'].AddEntry(histograms['llt']['zz'], "ZZ", "f")
     histograms['llt']['legend'].AddEntry(histograms['llt']['fakes'],
-                                         "Non-prompt")
-    histograms['llt']['legend'].AddEntry(histograms['llt']['wz'], "WZ")
+                                         "Non-prompt", "f")
+    histograms['llt']['legend'].AddEntry(histograms['llt']['wz'], "WZ", "f")
     histograms['llt']['legend'].AddEntry(histograms['llt']['signal'],
-                                         "m_{H} = 125 GeV")
+                                         "m_{H} = 125 GeV", "l")
     histograms['llt']['legend'].AddEntry(histograms['llt']['data'],
-                                         "Observed")
+                                         "Observed", "pe")
 
     # ZH
     histograms['zh'] = {}
@@ -238,18 +245,18 @@ if __name__ == "__main__":
         title='data', style='data')
 
     histograms['zh']['stack'] = ROOT.THStack("zh_stack", "zh_stack")
-    histograms['zh']['stack'].Add(histograms['zh']['zz'])
-    histograms['zh']['stack'].Add(histograms['zh']['fakes'])
-    histograms['zh']['stack'].Add(histograms['zh']['signal'])
+    histograms['zh']['stack'].Add(histograms['zh']['zz'], 'hist')
+    histograms['zh']['stack'].Add(histograms['zh']['fakes'], 'hist')
+    histograms['zh']['stack'].Add(histograms['zh']['signal'], 'hist')
 
-    histograms['zh']['legend'] = ROOT.TLegend(0.7, 0.9, 0.6, 0.9, "", "brNDC")
-    histograms['zh']['legend'].AddEntry(histograms['zh']['zz'], "ZZ")
+    histograms['zh']['legend'] = make_legend()
+    histograms['zh']['legend'].AddEntry(histograms['zh']['zz'], "ZZ", "f")
     histograms['zh']['legend'].AddEntry(histograms['zh']['fakes'],
-                                        "Non-prompt")
+                                        "Non-prompt", "f")
     histograms['zh']['legend'].AddEntry(histograms['zh']['signal'],
-                                        "m_{H} = 125 GeV")
+                                        "m_{H} = 125 GeV", "l")
     histograms['zh']['legend'].AddEntry(histograms['zh']['data'],
-                                        "Observed")
+                                        "Observed", "pe")
 
     # LTT
     histograms['ltt'] = {}
@@ -274,28 +281,54 @@ if __name__ == "__main__":
         title='m_{H}=125 GeV', style='signal')
 
     histograms['ltt']['data'] = get_combined_histogram(
-        'data_obs', zh_channels, files_to_use,
+        'data_obs', ltt_channels, files_to_use,
         title='data', style='data')
 
     histograms['ltt']['stack'] = ROOT.THStack("ltt_stack", "ltt_stack")
-    histograms['ltt']['stack'].Add(histograms['ltt']['zz'])
-    histograms['ltt']['stack'].Add(histograms['ltt']['fakes'])
-    histograms['ltt']['stack'].Add(histograms['ltt']['wz'])
-    histograms['ltt']['stack'].Add(histograms['ltt']['signal'])
+    histograms['ltt']['stack'].Add(histograms['ltt']['zz'], "hist")
+    histograms['ltt']['stack'].Add(histograms['ltt']['fakes'], "hist")
+    histograms['ltt']['stack'].Add(histograms['ltt']['wz'], "hist")
+    histograms['ltt']['stack'].Add(histograms['ltt']['signal'], "hist")
+
+    histograms['ltt']['legend'] = make_legend()
+    histograms['ltt']['legend'].AddEntry(histograms['ltt']['zz'], "ZZ", "f")
+    histograms['ltt']['legend'].AddEntry(histograms['ltt']['fakes'],
+                                         "Non-prompt", "f")
+    histograms['ltt']['legend'].AddEntry(histograms['ltt']['wz'], "WZ", "f")
+    histograms['ltt']['legend'].AddEntry(histograms['ltt']['signal'],
+                                         "m_{H} = 125 GeV", "l")
+    histograms['ltt']['legend'].AddEntry(histograms['ltt']['data'],
+                                         "Observed", "pe")
+
+    # Apply some styles to all the histograms
+    for channel in ['llt', 'zh', 'ltt']:
+        # Use poissonian error bars.
+        histograms[channel]['poisson'] = convert(histograms[channel]['data'])
+        # Make sure all data points are visible
+        fix_maximum(histograms[channel])
+        # We have to draw it so things like the axes are initialized.
+        histograms[channel]['stack'].Draw()
+        histograms[channel]['stack'].GetYaxis().SetTitle(
+            "Events/%i GeV" % histograms[channel]['data'].GetBinWidth(1))
+        histograms[channel]['stack'].GetXaxis().SetTitle("m_{vis} [GeV]")
+
+    plot_suffix = "_%s_%s.pdf" % (
+        'prefit' if args.prefit else 'postfit',
+        args.period
+    )
 
     canvas = ROOT.TCanvas("asdf", "asdf", 800, 800)
     histograms['llt']['stack'].Draw()
-    histograms['llt']['data'].Draw('pe same')
+    histograms['llt']['poisson'].Draw('pe same')
     histograms['llt']['legend'].Draw()
-    canvas.SaveAs('llt.png')
+    canvas.SaveAs('plots/llt' + plot_suffix)
 
     histograms['zh']['stack'].Draw()
-    histograms['zh']['data'].Draw('pe same')
+    histograms['zh']['poisson'].Draw('pe same')
     histograms['zh']['legend'].Draw()
-    canvas.SaveAs('zh.png')
+    canvas.SaveAs('plots/zh' + plot_suffix)
 
     histograms['ltt']['stack'].Draw()
-    histograms['ltt']['data'].Draw('pe same')
-    #histograms['ltt']['legend'].Draw()
-    canvas.SaveAs('ltt.png')
-
+    histograms['ltt']['poisson'].Draw('pe same')
+    histograms['ltt']['legend'].Draw()
+    canvas.SaveAs('plots/ltt' + plot_suffix)

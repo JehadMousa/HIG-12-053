@@ -172,8 +172,13 @@ $(HTT_TEST)/root_postfit/.timestamp: $(HTT_TEST)/.fit_timestamp
 	touch $@
 
 plots/.timestamp: $(HTT_TEST)/root_postfit/.timestamp pas_plots.py
+	rm -rf plots
 	mkdir -p plots
-	python pas_plots.py && touch $@
+	python pas_plots.py 
+	python pas_plots.py --prefit
+	python pas_plots.py --period 7TeV
+	python pas_plots.py --period 8TeV
+	touch $@
 
 postfit: $(HTT_TEST)/root_postfit/.timestamp
 
