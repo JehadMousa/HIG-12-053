@@ -147,6 +147,51 @@ pulls/.timestamp: $(LIMITDIR)/.timestamp do_pull.sh
 pulls: pulls/.timestamp
 
 ################################################################################
+#####  Computing the limits ####################################################
+################################################################################
+
+NPROCS=10
+
+$(LIMITDIR)/.computed: $(LIMITDIR)/.timestamp
+	echo "Computing combined limits"
+	./compute_limits.sh cmb $(NPROCS)
+	echo "Computing ZH limits"
+	./compute_limits.sh 4l $(NPROCS)
+	echo "Computing LLT limits"
+	./compute_limits.sh llt $(NPROCS)
+	echo "Computing LTT limits"
+	./compute_limits.sh ltt $(NPROCS)
+	touch $@
+
+limits: $(LIMITDIR)/.computed
+
+################################################################################
+#####  Plotting the limits #####################################################
+################################################################################
+
+# This dumb macro needs to be compiled.
+$(BASE)/HiggsAnalysis/HiggsToTauTau/macros/compareLimits_C.so: $(BASE)/HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C
+	cd $(BASE) && source HiggsAnalysis/HiggsToTauTau/environment.sh
+
+comparemacro: $(BASE)/HiggsAnalysis/HiggsToTauTau/macros/compareLimits_C.so
+
+$(LIMITDIR)/.plot_timestamp: $(LIMITDIR)/.computed $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py
+	rm -f $@
+	# If you forget the trailing slash on the plot directory it will fuck up
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py llt/
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py 4l/
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py ltt/
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py cmb/
+	# Combine the output of all the individual limit results into a single file.
+	rm -f $(LIMITDIR)/limits_limit.root 
+	hadd $(LIMITDIR)/limits_limit.root $(LIMITDIR)/*_limit.root
+	cd $(LIMITDIR) && root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_limit.root", "cmb,4l,llt,ltt", true, false, "sm-xsex", 0, 15, false,"  Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=24 fb^{-1}")'
+	cd $(LIMITDIR) && root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_limit.root", "cmb,4l,llt,ltt", false, true, "sm-xsex", 0, 15, false,"  Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=24 fb^{-1}")'
+	touch $@
+
+plotlimits: $(LIMITDIR)/.plot_timestamp
+
+################################################################################
 #####  Making the post fit shape files for the nice plots ######################
 ################################################################################
 
@@ -154,6 +199,7 @@ pulls: pulls/.timestamp
 $(HTT_TEST)/.fit_timestamp: $(LIMITDIR)/.timestamp
 	cd $(HTT_TEST) && ./mlfit_and_copy.py $(LIMITDIR)/cmb/125 && touch $@
 
+# Make .root files with the applied pulls
 $(HTT_TEST)/root_postfit/.timestamp: $(HTT_TEST)/.fit_timestamp
 	# make a copy of the directory so we can mess with them.
 	cp -r $(HTT_TEST)/root $(HTT_TEST)/root_postfit
@@ -171,7 +217,7 @@ $(HTT_TEST)/root_postfit/.timestamp: $(HTT_TEST)/.fit_timestamp
 	# all done
 	touch $@
 
-plots/.timestamp: $(HTT_TEST)/root_postfit/.timestamp pas_plots.py
+plots/.mass_timestamp: $(HTT_TEST)/root_postfit/.timestamp pas_plots.py
 	rm -rf plots
 	mkdir -p plots
 	python pas_plots.py 
@@ -182,7 +228,7 @@ plots/.timestamp: $(HTT_TEST)/root_postfit/.timestamp pas_plots.py
 
 postfit: $(HTT_TEST)/root_postfit/.timestamp
 
-plots: plots/.timestamp
+massplots: plots/.mass_timestamp
 
 ################################################################################
 #####  Making the yield tablespe files for the nice plots ######################
@@ -191,4 +237,5 @@ plots: plots/.timestamp
 vh_table.tex: megacard_125.txt make_yields_table.py
 	python make_yields_table.py
 
-.PHONY: cards zh llt ltt limitdir pulls postfit plots
+
+.PHONY: cards zh llt ltt limitdir pulls postfit massplots limits comparemacro plotlimits
