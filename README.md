@@ -22,7 +22,7 @@ scram b -j 4; rehash
 then check out this package:
 
 ```shell
-git clone https://github.com/ekfriis/HIG-12-051.git
+git clone https://github.com/ekfriis/HIG-12-053.git
 ```
 
 and get the latest VH datacards:
