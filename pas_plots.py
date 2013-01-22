@@ -10,7 +10,7 @@ import os
 from poisson import convert
 import ROOT
 ROOT.gROOT.SetBatch(True)
-
+ROOT.gROOT.ProcessLine('.x tdrStyle.C')
 
 postfit_src = os.path.join(os.environ['CMSSW_BASE'],
                            'src/HiggsAnalysis/HiggsToTauTau/test/',
@@ -41,7 +41,7 @@ def add_cms_blurb(sqrts, intlumi, preliminary=True, blurb=''):
     if preliminary:
         label_text += " Preliminary"
     label_text += " %s TeV" % sqrts
-    label_text += " L=%sfb^{-1}" % (intlumi)
+    label_text += " L = %sfb^{-1}" % (intlumi)
     label_text += " " + blurb
     return latex.DrawLatex(0.18, 0.97, label_text)
 
@@ -196,10 +196,11 @@ if __name__ == "__main__":
     )
 
     def make_legend():
-        output = ROOT.TLegend(0.6, 0.6, 0.95, 0.95, "", "brNDC")
+        output = ROOT.TLegend(0.5, 0.6, 0.90, 0.93, "", "brNDC")
         output.SetLineWidth(0)
         output.SetLineStyle(0)
         output.SetFillStyle(0)
+        output.SetBorderSize(0)
         return output
 
     histograms['llt']['stack'] = ROOT.THStack("llt_stack", "llt_stack")
@@ -216,7 +217,7 @@ if __name__ == "__main__":
     histograms['llt']['legend'].AddEntry(histograms['llt']['signal'],
                                          "m_{H} = 125 GeV", "l")
     histograms['llt']['legend'].AddEntry(histograms['llt']['data'],
-                                         "Observed", "pe")
+                                         "Observed", "lpe")
 
     # ZH
     histograms['zh'] = {}
@@ -256,7 +257,7 @@ if __name__ == "__main__":
     histograms['zh']['legend'].AddEntry(histograms['zh']['signal'],
                                         "m_{H} = 125 GeV", "l")
     histograms['zh']['legend'].AddEntry(histograms['zh']['data'],
-                                        "Observed", "pe")
+                                        "Observed", "lpe")
 
     # LTT
     histograms['ltt'] = {}
@@ -298,7 +299,7 @@ if __name__ == "__main__":
     histograms['ltt']['legend'].AddEntry(histograms['ltt']['signal'],
                                          "m_{H} = 125 GeV", "l")
     histograms['ltt']['legend'].AddEntry(histograms['ltt']['data'],
-                                         "Observed", "pe")
+                                         "Observed", "lpe")
 
     # Apply some styles to all the histograms
     for channel in ['llt', 'zh', 'ltt']:
@@ -317,18 +318,32 @@ if __name__ == "__main__":
         args.period
     )
 
+    # Figure out what goes in the CMS preliminary line
+    blurb_map = {
+        '7TeV': ('5', '7'),
+        '8TeV': ('19', '8'),
+        'all': ('24', '7+8'),
+    }
+    int_lumi, sqrts = blurb_map[args.period]
+
     canvas = ROOT.TCanvas("asdf", "asdf", 800, 800)
+    canvas.SetTopMargin(0.05)
+    canvas.SetRightMargin(0.1)
+
     histograms['llt']['stack'].Draw()
     histograms['llt']['poisson'].Draw('pe same')
     histograms['llt']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
     canvas.SaveAs('plots/llt' + plot_suffix)
 
     histograms['zh']['stack'].Draw()
     histograms['zh']['poisson'].Draw('pe same')
     histograms['zh']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
     canvas.SaveAs('plots/zh' + plot_suffix)
 
     histograms['ltt']['stack'].Draw()
     histograms['ltt']['poisson'].Draw('pe same')
     histograms['ltt']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
     canvas.SaveAs('plots/ltt' + plot_suffix)
