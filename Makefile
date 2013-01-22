@@ -184,4 +184,11 @@ postfit: $(HTT_TEST)/root_postfit/.timestamp
 
 plots: plots/.timestamp
 
+################################################################################
+#####  Making the yield tablespe files for the nice plots ######################
+################################################################################
+
+vh_table.tex: megacard_125.txt make_yields_table.py
+	python make_yields_table.py
+
 .PHONY: cards zh llt ltt limitdir pulls postfit plots

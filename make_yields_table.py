@@ -9,7 +9,7 @@ from DataCard import DataCard
 import string
 import sigfigs
 
-# Get the combination of all new channels
+# Get the combination of all channels
 megacard = DataCard('megacard_125.txt')
 
 # Store yields for various processes
@@ -29,13 +29,14 @@ yields['llt']['total'] = (
     yields['llt']['wz'] + yields['llt']['zz'] + yields['llt']['fakes'])
 yields['llt']['obs'] = megacard.get_obs('llt*')
 
-#yields['ltt']['wz'] = megacard.get_rate('ltt*', 'wz')
-#yields['ltt']['zz'] = megacard.get_rate('ltt*', 'zz')
-#yields['ltt']['fakes'] = megacard.get_rate('ltt*', 'fakes')
-#yields['ltt']['VH'] = megacard.get_rate('ltt*', 'VH')
-#yields['ltt']['VHww'] = 0
-#yields['ltt']['total'] = (
-#  yields['ltt']['wz'] + yields['ltt']['zz'] + yields['ltt']['fakes'])
+yields['ltt']['wz'] = megacard.get_rate('ltt*', 'wz')
+yields['ltt']['zz'] = megacard.get_rate('ltt*', 'zz')
+yields['ltt']['fakes'] = megacard.get_rate('ltt*', 'fakes')
+yields['ltt']['VH'] = megacard.get_rate('ltt*', 'VH')
+yields['ltt']['VHww'] = 0
+yields['ltt']['total'] = (
+    yields['ltt']['wz'] + yields['ltt']['zz'] + yields['ltt']['fakes'])
+yields['ltt']['obs'] = megacard.get_obs('ltt*')
 
 yields['zh']['zz'] = megacard.get_rate('ZH*', 'ZZ')
 yields['zh']['fakes'] = megacard.get_rate('ZH*', 'Zjets')
@@ -60,21 +61,21 @@ for channel, channel_info in yields.iteritems():
         flat[channel + process] = render(process_yield)
 
 vh_template = r'''
-    \begin{tabular}{l | c | c}
-      Process & $$\ell \ell \tau_h$$  & $$ \ell\ell LL $$ \\
+    \begin{tabular}{l | c | c | c}
+      Process &$$\ell \ell \tau_h$$& $$\ell\tau_h\tau_h$$ & $$\ell\ell LL$$ \\
       \hline
-      Fakes & $lltfakes & \multirow{2}{*}{$zhfakes} \\
-      WZ & $lltwz & \\
+      Fakes & $lltfakes & $lttfakes & \multirow{2}{*}{$zhfakes} \\
+      WZ & $lltwz & $lttwz & \\
       \hline
-      ZZ & $lltzz & $zhzz \\
+      ZZ & $lltzz & $lttzz & $zhzz \\
       \hline
       \hline
-      Total bkg. &  $llttotal & $zhtotal \\
+      Total bkg. &  $llttotal & $ltttotal & $zhtotal \\
       \hline
-      VH$$\to$$V$$\tau\tau (m_H=125\GeV)$$ & $lltVH & $zhVH \\
-      VH$$\to$$VWW $$(m_H=125\GeV)$$ & $lltVHww & $zhVHww \\
+      VH$$\to$$V$$\tau\tau (m_H=125\GeV)$$ & $lltVH & $lttVH & $zhVH \\
+      VH$$\to$$VWW $$(m_H=125\GeV)$$ & $lltVHww & $lttVHww & $zhVHww \\
       \hline
-      Observed & $lltobs & $zhobs  \\
+      Observed & $lltobs & $lttobs & $zhobs  \\
     \end{tabular}
 '''
 
