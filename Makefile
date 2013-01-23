@@ -34,8 +34,9 @@ COLLECT=$(BASE)/auxiliaries/datacards/collected/vhtt
 $(SETUP)/vhtt.inputs-sm-8TeV.root: $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2012.root
 	hadd -f $@ $^
 
-# Combine all 7TeV shape files
-$(SETUP)/vhtt.inputs-sm-7TeV.root: $(COLLECT)/llt_2011.root $(COLLECT)/zh_2011.root $(COLLECT)/ltt_2011.root
+# Combine all 7TeV shape files - we just take these from the HCP cards for 
+# LLT and ZH
+$(SETUP)/vhtt.inputs-sm-7TeV.root: $(COLLECT)/llt_zh_hcp_7TeV.root $(COLLECT)/ltt_2011.root
 	hadd -f $@ $^
 
 SHAPEFILE7=$(SETUP)/vhtt.inputs-sm-7TeV.root 
