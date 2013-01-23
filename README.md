@@ -16,6 +16,8 @@ cmsenv
 cvs co -r V02-02-08 HiggsAnalysis/CombinedLimit
 cvs co HiggsAnalysis/HiggsToTauTau
 python HiggsAnalysis/HiggsToTauTau/scripts/init.py --tag V00-01-00-noModels
+# Remove any leftover shape files
+rm HiggsAnalysis/HiggsAnalysis/setup/vhtt/*root
 scram b -j 4; rehash
 ```
 
@@ -39,6 +41,8 @@ All the tricks to build the results are contained in the Makefile.  The
 important commands are:
 
 ```shell
+cd HIG-12-053
+
 # Run the post fit and make all the final mass distribution plots
 make massplots
 # Compute all the limits

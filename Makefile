@@ -238,4 +238,10 @@ vh_table.tex: megacard_125.txt make_yields_table.py
 	python make_yields_table.py
 
 
-.PHONY: cards zh llt ltt limitdir pulls postfit massplots limits comparemacro plotlimits
+clean:
+	rm -f vh_table.tex
+	rm -rf plots/
+	rm -rf $(LIMITDIR)
+	rm -rf $(SETUP)/*.root
+
+.PHONY: cards zh llt ltt limitdir pulls postfit massplots limits comparemacro plotlimits clean
