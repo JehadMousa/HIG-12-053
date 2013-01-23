@@ -143,20 +143,6 @@ if __name__ == "__main__":
                         choices=['7TeV', '8TeV', 'all'],
                         help="Which data taking period")
 
-    parser.add_argument('--label', default='',
-                        help='Add an extra label to the plot filename')
-
-    parser.add_argument('--llt', nargs='+', default=['emt', 'mmt'],
-                        help='Channels to use for LLT. Default: %(default)s')
-
-    parser.add_argument('--ltt', nargs='+', default=['ett', 'mtt'],
-                        help='Channels to use for LTT. Default: %(default)s')
-
-    parser.add_argument('--zh', nargs='+', default=[
-        'eeem_zh', 'eeet_zh', 'eemt_zh', 'eett_zh',
-        'mmme_zh', 'mmet_zh', 'mmmt_zh', 'mmtt_zh', ],
-        help='Channels to use for ZH. Default: %(default)s')
-
     args = parser.parse_args()
 
     prefit_7TeV_file = ROOT.TFile.Open(
@@ -183,7 +169,7 @@ if __name__ == "__main__":
 
     # LLT
     histograms['llt'] = {}
-    llt_channels = args.llt
+    llt_channels = ['emt', 'mmt']
 
     histograms['llt']['wz'] = get_combined_histogram(
         'wz', llt_channels, files_to_use, title='WZ',
@@ -235,7 +221,10 @@ if __name__ == "__main__":
 
     # ZH
     histograms['zh'] = {}
-    zh_channels = args.zh
+    zh_channels = [
+        'eeem_zh', 'eeet_zh', 'eemt_zh', 'eett_zh',
+        'mmme_zh', 'mmet_zh', 'mmmt_zh', 'mmtt_zh',
+    ]
 
     histograms['zh']['zz'] = get_combined_histogram(
         'ZZ', zh_channels, files_to_use, title='ZZ',
@@ -272,7 +261,7 @@ if __name__ == "__main__":
 
     # LTT
     histograms['ltt'] = {}
-    ltt_channels = args.ltt
+    ltt_channels = ['ett', 'mtt']
 
     histograms['ltt']['wz'] = get_combined_histogram(
         'wz', ltt_channels, files_to_use, title='WZ',
@@ -326,8 +315,7 @@ if __name__ == "__main__":
             "Events/%i GeV" % histograms[channel]['data'].GetBinWidth(1))
         histograms[channel]['stack'].GetXaxis().SetTitle("m_{vis} [GeV]")
 
-    plot_suffix = "_%s" % args.label if args.label else ""
-    plot_suffix += "_%s_%s.pdf" % (
+    plot_suffix = "_%s_%s.pdf" % (
         'prefit' if args.prefit else 'postfit',
         args.period
     )
@@ -344,24 +332,20 @@ if __name__ == "__main__":
     canvas.SetTopMargin(0.05)
     canvas.SetRightMargin(0.1)
 
-    # check if there are any subchannels used in llt
-    if args.llt:
-        histograms['llt']['stack'].Draw()
-        histograms['llt']['poisson'].Draw('pe same')
-        histograms['llt']['legend'].Draw()
-        add_cms_blurb(sqrts, int_lumi)
-        canvas.SaveAs('plots/llt' + plot_suffix)
+    histograms['llt']['stack'].Draw()
+    histograms['llt']['poisson'].Draw('pe same')
+    histograms['llt']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
+    canvas.SaveAs('plots/llt' + plot_suffix)
 
-    if args.zh:
-        histograms['zh']['stack'].Draw()
-        histograms['zh']['poisson'].Draw('pe same')
-        histograms['zh']['legend'].Draw()
-        add_cms_blurb(sqrts, int_lumi)
-        canvas.SaveAs('plots/zh' + plot_suffix)
+    histograms['zh']['stack'].Draw()
+    histograms['zh']['poisson'].Draw('pe same')
+    histograms['zh']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
+    canvas.SaveAs('plots/zh' + plot_suffix)
 
-    if args.ltt:
-        histograms['ltt']['stack'].Draw()
-        histograms['ltt']['poisson'].Draw('pe same')
-        histograms['ltt']['legend'].Draw()
-        add_cms_blurb(sqrts, int_lumi)
-        canvas.SaveAs('plots/ltt' + plot_suffix)
+    histograms['ltt']['stack'].Draw()
+    histograms['ltt']['poisson'].Draw('pe same')
+    histograms['ltt']['legend'].Draw()
+    add_cms_blurb(sqrts, int_lumi)
+    canvas.SaveAs('plots/ltt' + plot_suffix)
