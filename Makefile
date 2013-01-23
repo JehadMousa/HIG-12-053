@@ -8,6 +8,16 @@
 # limitdir: generate limit computation project area
 #
 # pulls: compute the pulls.  Stored in pulls/125
+#
+# massplots: make the pre and postfit plots
+#
+# limits: compute all the limits
+#
+# plotlimits: make limit plots
+#
+# plots/vh_table.tex: generate tex table
+#
+# all: do everything!
 
 # Working directory
 BASE=$(CMSSW_BASE)/src
@@ -181,7 +191,7 @@ $(LIMITDIR)/.plot_timestamp: $(LIMITDIR)/.computed $(BASE)/HiggsAnalysis/HiggsTo
 	# If you forget the trailing slash on the plot directory it will fuck up
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py llt/
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py 4l/
-	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py ltt/
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py ltt/ max=25
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py cmb/
 	# Combine the output of all the individual limit results into a single file.
 	rm -f $(LIMITDIR)/limits_limit.root 
@@ -190,7 +200,17 @@ $(LIMITDIR)/.plot_timestamp: $(LIMITDIR)/.computed $(BASE)/HiggsAnalysis/HiggsTo
 	cd $(LIMITDIR) && root -b -q '../../HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_limit.root", "cmb,4l,llt,ltt", false, true, "sm-xsex", 0, 15, false,"  Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=24 fb^{-1}")'
 	touch $@
 
-plotlimits: $(LIMITDIR)/.plot_timestamp
+plots/.limits_timestamp: $(LIMITDIR)/.plot_timestamp
+	mkdir -p plots
+	cp $(LIMITDIR)/cmb_limit.pdf plots/
+	cp $(LIMITDIR)/cmb_limit.tex plots/
+	cp $(LIMITDIR)/4l_limit.pdf plots/
+	cp $(LIMITDIR)/llt_limit.pdf plots/
+	cp $(LIMITDIR)/ltt_limit.pdf plots/
+	cp $(LIMITDIR)/singleLimits_expected_sm.pdf plots/exp_limit_breakdown.pdf
+	touch $@
+
+plotlimits: plots/.limits_timestamp
 
 ################################################################################
 #####  Making the post fit shape files for the nice plots ######################
@@ -203,6 +223,7 @@ $(HTT_TEST)/.fit_timestamp: $(LIMITDIR)/.timestamp
 # Make .root files with the applied pulls
 $(HTT_TEST)/root_postfit/.timestamp: $(HTT_TEST)/.fit_timestamp
 	# make a copy of the directory so we can mess with them.
+	rm -fr $(HTT_TEST)/root_postfit
 	cp -r $(HTT_TEST)/root $(HTT_TEST)/root_postfit
 	# apply all the pulls to the shapes
 	cd $(HTT_TEST) && ./postfit.py root_postfit/vhtt.input_7TeV.root datacards/vhtt_1_7TeV.txt \
@@ -238,6 +259,10 @@ massplots: plots/.mass_timestamp
 vh_table.tex: megacard_125.txt make_yields_table.py
 	python make_yields_table.py
 
+plots/vh_table.tex: vh_table.tex
+	cp vh_table.tex plots/vh_table.tex
+
+all: massplots plots/vh_table.tex plotlimits
 
 clean:
 	rm -f vh_table.tex
