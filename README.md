@@ -50,6 +50,8 @@ make limits
 # Plot the limits (they show up in limits/*pdf)
 make limitplots
 # Make vh_table.tex for the PAS
-make vh_table.tex
+make plots/vh_table.tex
 ```
+
+or you can just run "make all", which runs everything.
 
