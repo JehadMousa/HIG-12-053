@@ -314,6 +314,10 @@ if __name__ == "__main__":
         histograms[channel]['stack'].GetYaxis().SetTitle(
             "Events/%i GeV" % histograms[channel]['data'].GetBinWidth(1))
         histograms[channel]['stack'].GetXaxis().SetTitle("m_{vis} [GeV]")
+        if channel == 'llt': #srink the label size
+            labelSize = histograms[channel]['stack'].GetXaxis().GetLabelSize()
+            histograms[channel]['stack'].GetXaxis().SetLabelSize(labelSize*0.8)
+
 
     plot_suffix = "_%s_%s.pdf" % (
         'prefit' if args.prefit else 'postfit',
