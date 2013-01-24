@@ -343,6 +343,7 @@ if __name__ == "__main__":
     canvas.SaveAs('plots/llt' + plot_suffix)
 
     histograms['zh']['stack'].Draw()
+    histograms['zh']['stack'].GetHistogram().GetXaxis().SetRangeUser(0, 200)
     histograms['zh']['poisson'].Draw('pe same')
     histograms['zh']['legend'].Draw()
     add_cms_blurb(sqrts, int_lumi)
