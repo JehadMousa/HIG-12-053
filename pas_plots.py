@@ -350,7 +350,9 @@ if __name__ == "__main__":
     canvas.SaveAs('plots/zh' + plot_suffix)
 
     histograms['ltt']['stack'].Draw()
-    histograms['ltt']['poisson'].Draw('pe same')
+    is_blind = os.environ.get('blind', 'NO') == 'YES'
+    if not is_blind:
+        histograms['ltt']['poisson'].Draw('pe same')
     histograms['ltt']['legend'].Draw()
     add_cms_blurb(sqrts, int_lumi)
     canvas.SaveAs('plots/ltt' + plot_suffix)

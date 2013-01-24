@@ -6,6 +6,7 @@ Build yields for HIG-12-053 results table using data card.
 '''
 
 from DataCard import DataCard
+import os
 import string
 import sigfigs
 
@@ -37,6 +38,8 @@ yields['ltt']['VHww'] = 0
 yields['ltt']['total'] = (
     yields['ltt']['wz'] + yields['ltt']['zz'] + yields['ltt']['fakes'])
 yields['ltt']['obs'] = megacard.get_obs('ltt*')
+is_blind = os.environ.get('blind', 'NO') == 'YES'
+yields['ltt']['obs'] = 'blind' if is_blind else megacard.get_obs('ltt*')
 
 yields['zh']['zz'] = megacard.get_rate('ZH*', 'ZZ')
 yields['zh']['fakes'] = megacard.get_rate('ZH*', 'Zjets')
@@ -51,6 +54,8 @@ def render(the_yield):
         return str(the_yield)
     elif isinstance(the_yield, float):
         return "%0.f" % the_yield
+    elif isinstance(the_yield, basestring):
+        return the_yield
     return r'$ %s \pm %s $' % sigfigs.sigfigs(
         the_yield.nominal_value, the_yield.std_dev(), 2, -1)
 
