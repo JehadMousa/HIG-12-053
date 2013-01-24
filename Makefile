@@ -236,6 +236,10 @@ $(HTT_TEST)/root_postfit/.timestamp: $(HTT_TEST)/.fit_timestamp
 	  --verbose
 	cd $(HTT_TEST) && ./postfit.py root_postfit/vhtt.input_8TeV.root datacards/vhtt_0_8TeV.txt \
 	  --bins emt mmt --verbose
+	cd $(HTT_TEST) && ./postfit.py root_postfit/vhtt.input_8TeV.root datacards/vhtt_2_8TeV.txt \
+	  --bins ett mtt --verbose
+	cd $(HTT_TEST) && ./postfit.py root_postfit/vhtt.input_7TeV.root datacards/vhtt_2_7TeV.txt \
+	  --bins ett mtt --verbose
 	# all done
 	touch $@
 
