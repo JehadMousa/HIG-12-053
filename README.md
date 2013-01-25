@@ -55,3 +55,27 @@ make plots/vh_table.tex
 
 or you can just run "make all", which runs everything.
 
+Signal Injection
+----------------
+
+Do the following to make the signal injected plots.  This example works on the
+_llt_ directory, substitute the _4l_, _cmb_, and _ltt_ directories to do 
+the other channels.
+
+```shell
+# Run a bunch of jobs with different pseudoexperiments
+submit.py --injected --condor --toys 100 --bunch-masses 10 limits/llt/*
+# Collate all the results
+submit.py --injected --condor --collect limits/llt/*
+# Plot the results - don't forget the trailing / slash on llt/
+cd limits/
+plot --injected $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_injected_layout.py llt/
+```
+
+This example is for the UW cluster.  Omit the --condor option to run on LXBatch.
+If you are running on the UW cluster, you'll need to enable write access to your 
+working directory to the "condor-hosts" group.
+
+```shell
+find . -type d  -exec fs setacl -dir '{}' -acl condor-hosts rlidkw \;
+```
