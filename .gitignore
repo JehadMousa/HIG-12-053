@@ -36,3 +36,7 @@ limits
 megacard_125.txt
 plots/
 pulls/
+injected-*/
+limits-*/
+log/
+condor.log
