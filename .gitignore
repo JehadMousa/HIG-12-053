@@ -40,3 +40,4 @@ injected-*/
 limits-*/
 log/
 condor.log
+tmp.root
