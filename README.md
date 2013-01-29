@@ -69,9 +69,4 @@ Do the following to make the signal injected plots.
 ```
 
 This example is for the UW cluster.  Omit the --condor option in the scripts to
-run on LXBatch.  If you are running on the UW cluster, you'll need to enable
-write access to your working directory to the "condor-hosts" group.
-
-```shell
-find . -type d  -exec fs setacl -dir '{}' -acl condor-hosts rlidkw \;
-```
+run on LXBatch.  
