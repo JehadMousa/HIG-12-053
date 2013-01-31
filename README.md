@@ -48,7 +48,7 @@ make massplots
 # Compute all the limits
 make limits
 # Plot the limits (they show up in limits/*pdf)
-make limitplots
+make plotlimits
 # Make vh_table.tex for the PAS
 make plots/vh_table.tex
 ```
