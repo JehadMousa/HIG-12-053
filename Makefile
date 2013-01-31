@@ -62,6 +62,7 @@ LLT_CONFIGS8=$(wildcard $(SETUP)/*-sm-8TeV-00.*)
 
 # Recipe for building LLT cards
 $(CARDS)/.llt7_timestamp: $(SHAPEFILE7) $(LLT_CONFIGS7)
+	@echo "Recipes for building EMT and MMT cards 7TeV"
 	rm -f $(CARDS)/vhtt_0_7TeV*
 	# $@ is the .timestamp file
 	rm -f $@
@@ -70,6 +71,7 @@ $(CARDS)/.llt7_timestamp: $(SHAPEFILE7) $(LLT_CONFIGS7)
 	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 0 && touch $@
 
 $(CARDS)/.llt8_timestamp: $(SHAPEFILE8) $(LLT_CONFIGS8)
+	@echo "Recipes for building EMT and MMT cards 8TeV"
 	rm -f $(CARDS)/vhtt_0_8TeV*
 	rm -f $@
 	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 0 && touch $@
@@ -85,11 +87,13 @@ ZH_CONFIGS8=$(wildcard $(SETUP)/*-sm-8TeV-01.*)
 
 # Recipe for building ZH cards
 $(CARDS)/.zh7_timestamp: $(SHAPEFILE7) $(ZH_CONFIGS7)
+	@echo "Recipes for building ZH cards 7TeV"
 	rm -f $(CARDS)/vhtt_1_7TeV*
 	rm -f $@
 	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 1 && touch $@
 
 $(CARDS)/.zh8_timestamp: $(SHAPEFILE8) $(ZH_CONFIGS8)
+	@echo "Recipes for building ZH cards 8TeV"
 	rm -f $(CARDS)/vhtt_1_8TeV*
 	rm -f $@
 	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 1 && touch $@
@@ -105,14 +109,16 @@ LTT_CONFIGS8=$(wildcard $(SETUP)/*-sm-8TeV-02.*)
 
 # Recipe for building LTT cards
 $(CARDS)/.ltt7_timestamp: $(SHAPEFILE7) $(LTT_CONFIGS7)
+	@echo "Recipes for building LTT cards 7TeV"
 	rm -f $(CARDS)/vhtt_2_7TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && touch $@
+	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_7TeV* | xargs -n1 -I{} prune_signal_uncertainties_ltt.py {} && touch $@
 
 $(CARDS)/.ltt8_timestamp: $(SHAPEFILE8) $(LTT_CONFIGS8)
+	@echo "Recipes for building LTT cards 8TeV"
 	rm -f $(CARDS)/vhtt_2_8TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && touch $@
+	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_8TeV* | xargs -n1 -I{} prune_signal_uncertainties_ltt.py {} && touch $@
 
 ltt: $(CARDS)/.ltt7_timestamp $(CARDS)/.ltt8_timestamp
 
@@ -191,10 +197,10 @@ $(LIMITDIR)/.plot_timestamp: $(LIMITDIR)/.computed $(BASE)/HiggsAnalysis/HiggsTo
 	# If you forget the trailing slash on the plot directory it will fuck up
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py llt/ 
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py 4l/ 
-	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py ltt/ max=25 
+	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py ltt/ max=50 
 	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_layout.py cmb/ 
-	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_exp_layout.py ltt/ max=25 
-	cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_exp_layout.py cmb/ 
+	#cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_exp_layout.py ltt/ max=25 
+	#cd $(LIMITDIR) && plot --asymptotic $(BASE)/HiggsAnalysis/HiggsToTauTau/python/layouts/sm_vhtt_exp_layout.py cmb/ 
 	# Combine the output of all the individual limit results into a single file.
 	rm -f $(LIMITDIR)/limits_limit.root 
 	hadd $(LIMITDIR)/limits_limit.root $(LIMITDIR)/*_limit.root
