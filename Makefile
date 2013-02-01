@@ -112,13 +112,13 @@ $(CARDS)/.ltt7_timestamp: $(SHAPEFILE7) $(LTT_CONFIGS7)
 	@echo "Recipes for building LTT cards 7TeV"
 	rm -f $(CARDS)/vhtt_2_7TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_7TeV* | xargs -n1 -I{} prune_signal_uncertainties_ltt.py {} && touch $@
+	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_7TeV* | xargs -n1 -I{} ./prune_signal_uncertainties_ltt.py {} && touch $@
 
 $(CARDS)/.ltt8_timestamp: $(SHAPEFILE8) $(LTT_CONFIGS8)
 	@echo "Recipes for building LTT cards 8TeV"
 	rm -f $(CARDS)/vhtt_2_8TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_8TeV* | xargs -n1 -I{} prune_signal_uncertainties_ltt.py {} && touch $@
+	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_8TeV* | xargs -n1 -I{} ./prune_signal_uncertainties_ltt.py {} && touch $@
 
 ltt: $(CARDS)/.ltt7_timestamp $(CARDS)/.ltt8_timestamp
 
