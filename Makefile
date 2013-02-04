@@ -215,10 +215,13 @@ plots/.limits_timestamp: $(LIMITDIR)/.plot_timestamp
 	cp $(LIMITDIR)/4l_limit.pdf plots/
 	cp $(LIMITDIR)/llt_limit.pdf plots/
 	cp $(LIMITDIR)/ltt_limit.pdf plots/
-	cp $(LIMITDIR)/cmb_exp_limit.pdf plots/
-	cp $(LIMITDIR)/cmb_exp_limit.tex plots/
-	cp $(LIMITDIR)/ltt_exp_limit.pdf plots/
+	cp $(LIMITDIR)/cmb_limit.pdf plots/
+	cp $(LIMITDIR)/cmb_limit.tex plots/
+	#cp $(LIMITDIR)/cmb_exp_limit.pdf plots/
+	#cp $(LIMITDIR)/cmb_exp_limit.tex plots/
+	#cp $(LIMITDIR)/ltt_exp_limit.pdf plots/
 	cp $(LIMITDIR)/singleLimits_expected_sm.pdf plots/exp_limit_breakdown.pdf
+	cp $(LIMITDIR)/singleLimits_observed_sm.pdf plots/obs_limit_breakdown.pdf
 	touch $@
 
 plotlimits: plots/.limits_timestamp
