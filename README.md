@@ -17,7 +17,7 @@ cvs co -r V02-02-08 HiggsAnalysis/CombinedLimit
 cvs co -r V00-03-04 HiggsAnalysis/HiggsToTauTau
 python HiggsAnalysis/HiggsToTauTau/scripts/init.py --tag V00-01-00-noModels
 # Remove any leftover shape files
-rm HiggsAnalysis/HiggsAnalysis/setup/vhtt/*root
+rm HiggsAnalysis/HiggsToTauTau/setup/vhtt/*root
 scram b -j 4; rehash
 ```
 
