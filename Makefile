@@ -35,23 +35,42 @@ CARDDIR=$(BASE)/auxiliaries/datacards
 CARDS=$(BASE)/auxiliaries/datacards/sm/vhtt
 COLLECT=$(BASE)/auxiliaries/datacards/collected/vhtt
 
+# mass points to generate cards at
+ifneq ($(ALLMASSES),1) 
+  MASSES=110-145:5
+else
+  # There are three individual types of steps, depending on the range.
+  HCG_MASSES_1:=$(shell seq 110 0.5 140)
+  HCG_MASSES_2:=$(shell seq 140 1 145)
+  HCG_MASSES_3:=$(shell seq 124.5 0.1 126.5)
+  # Remove overlapping points
+  MASSES:=$(shell echo $(HCG_MASSES_1) $(HCG_MASSES_2) $(HCG_MASSES_3) | sort -n | uniq)
+endif
 
 ################################################################################
 #####  Recipes for combining all shape files ###################################
 ################################################################################
 
-# Combine all 8TeV shape files
-$(SETUP)/vhtt.inputs-sm-8TeV.root: $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2012.root
-	hadd -f $@ $^
-
-# Combine all 7TeV shape files - we just take these from the HCP cards for 
-# LLT and ZH
-$(SETUP)/vhtt.inputs-sm-7TeV.root: $(COLLECT)/llt_zh_hcp_7TeV.root $(COLLECT)/ltt_2011.root
-	hadd -f $@ $^
-
 SHAPEFILE7=$(SETUP)/vhtt.inputs-sm-7TeV.root 
 SHAPEFILE8=$(SETUP)/vhtt.inputs-sm-8TeV.root 
 
+# Combine all 8TeV shape files
+$(SHAPEFILE8): $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2012.root
+	hadd -f $@ $^
+ifeq ($(ALLMASSES),1) 
+	echo "HCG MODE"
+	./horizontal_morphing.sh $@
+endif
+
+
+# Combine all 7TeV shape files - we just take these from the HCP cards for 
+# LLT and ZH
+$(SHAPEFILE7)/vhtt.inputs-sm-7TeV.root: $(COLLECT)/llt_zh_hcp_7TeV.root $(COLLECT)/ltt_2011.root
+	hadd -f $@ $^
+ifeq ($(ALLMASSES),1) 
+	echo "HCG MODE"
+	./horizontal_morphing.sh $@
+endif
 
 ################################################################################
 #####  Recipes for building EMT and MMT cards ##################################
@@ -68,13 +87,13 @@ $(CARDS)/.llt7_timestamp: $(SHAPEFILE7) $(LLT_CONFIGS7)
 	rm -f $@
 	# change to base, run the setup command, and touch the .timestamp if 
 	# successful
-	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 0 && touch $@
+	cd $(BASE) && setup-datacards.py -p 7TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 0 && touch $@
 
 $(CARDS)/.llt8_timestamp: $(SHAPEFILE8) $(LLT_CONFIGS8)
 	@echo "Recipes for building EMT and MMT cards 8TeV"
 	rm -f $(CARDS)/vhtt_0_8TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 0 && touch $@
+	cd $(BASE) && setup-datacards.py -p 8TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 0 && touch $@
 
 llt: $(CARDS)/.llt7_timestamp $(CARDS)/.llt8_timestamp
 
@@ -90,13 +109,13 @@ $(CARDS)/.zh7_timestamp: $(SHAPEFILE7) $(ZH_CONFIGS7)
 	@echo "Recipes for building ZH cards 7TeV"
 	rm -f $(CARDS)/vhtt_1_7TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 1 && touch $@
+	cd $(BASE) && setup-datacards.py -p 7TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 1 && touch $@
 
 $(CARDS)/.zh8_timestamp: $(SHAPEFILE8) $(ZH_CONFIGS8)
 	@echo "Recipes for building ZH cards 8TeV"
 	rm -f $(CARDS)/vhtt_1_8TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 1 && touch $@
+	cd $(BASE) && setup-datacards.py -p 8TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 1 && touch $@
 
 zh: $(CARDS)/.zh7_timestamp $(CARDS)/.zh8_timestamp
 
@@ -112,13 +131,13 @@ $(CARDS)/.ltt7_timestamp: $(SHAPEFILE7) $(LTT_CONFIGS7)
 	@echo "Recipes for building LTT cards 7TeV"
 	rm -f $(CARDS)/vhtt_2_7TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 7TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_7TeV* | xargs -n1 -I{} $(WD)/prune_signal_uncertainties_ltt.py {} && touch $@
+	cd $(BASE) && setup-datacards.py -p 7TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_7TeV* | xargs -n1 -I{} $(WD)/prune_signal_uncertainties_ltt.py {} && touch $@
 
 $(CARDS)/.ltt8_timestamp: $(SHAPEFILE8) $(LTT_CONFIGS8)
 	@echo "Recipes for building LTT cards 8TeV"
 	rm -f $(CARDS)/vhtt_2_8TeV*
 	rm -f $@
-	cd $(BASE) && setup-datacards.py -p 8TeV --a sm 110-145:5 -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_8TeV* | xargs -n1 -I{} $(WD)/prune_signal_uncertainties_ltt.py {} && touch $@
+	cd $(BASE) && setup-datacards.py -p 8TeV --a sm $(MASSES) -c vhtt --sm-categories-vhtt 2 && ls $(CARDS)/vhtt_2_8TeV* | xargs -n1 -I{} $(WD)/prune_signal_uncertainties_ltt.py {} && touch $@
 
 ltt: $(CARDS)/.ltt7_timestamp $(CARDS)/.ltt8_timestamp
 
@@ -132,7 +151,7 @@ $(LIMITDIR)/.timestamp: $(CARDS)/.ltt7_timestamp $(CARDS)/.ltt8_timestamp \
   $(CARDS)/.zh7_timestamp $(CARDS)/.zh8_timestamp \
   $(CARDS)/.llt7_timestamp $(CARDS)/.llt8_timestamp
 	rm -rf $(LIMITDIR)
-	cd $(BASE) && setup-htt.py -o $(LIMITDIR) -c vhtt --sm-categories-vhtt "0 1 2" 110-145:5 && touch $@
+	cd $(BASE) && setup-htt.py -o $(LIMITDIR) -c vhtt --sm-categories-vhtt "0 1 2" $(MASSES) && touch $@
 
 
 limitdir: $(LIMITDIR)/.timestamp
@@ -287,5 +306,6 @@ clean:
 	rm -rf plots/
 	rm -rf $(LIMITDIR)
 	rm -rf $(SETUP)/*.root
+	rm -rf $(CARDS)/*.txt
 
 .PHONY: cards zh llt ltt limitdir pulls postfit massplots limits comparemacro plotlimits clean
