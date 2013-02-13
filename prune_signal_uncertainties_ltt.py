@@ -11,7 +11,7 @@ def is_other_signal_shape_uncert(x):
 
 fpath = sys.argv[-1]
 fname = os.path.basename(fpath)
-fname_format = re.compile(r'(?P<channel>[a-zA-Z]+)_(?P<category>[0-9]+)_(?P<period>[0-9]+TeV)-(?P<mass>[0-9]+).txt')
+fname_format = re.compile(r'(?P<channel>[a-zA-Z]+)_(?P<category>[0-9]+)_(?P<period>[0-9]+TeV)-(?P<mass>[0-9\.]+).txt')
 m = fname_format.match(fname)
 if not m:
     raise Exception('filename %s not in the proper format' % fname)
