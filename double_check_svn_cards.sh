@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# Make sure all the cards in the SVN work correctly
-
+# Make sure all the cards in the SVN work correctly.  Just runs
+# text2workspace.py on each sample.
 
 while read mass; do
-  for card in `ls hcg/couplings/vhtt/$mass/*.txt | grep -v vhtt_2`;
+  for card in `ls hcg/couplings/vhtt/$mass/*.txt`;
   do
     echo $card
     text2workspace.py -m $mass $card \
@@ -16,7 +16,7 @@ while read mass; do
 done < coupling_masses.txt
 
 while read mass; do
-  for card in `ls hcg/searches/vhtt/$mass/*.txt | grep -v vhtt_2`;
+  for card in `ls hcg/searches/vhtt/$mass/*.txt`;
   do
     echo $card
     text2workspace.py -m $mass $card \

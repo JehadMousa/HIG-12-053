@@ -98,4 +98,10 @@ The cards with second Higgs appear in auxiliaries_2ndhiggs/.../. Now run
 ./copy_to_hcg_svn.sh
 ```
 
-to copy the appropriate cards into the HCG SVN area, then svn commit.
+to copy the appropriate cards into the HCG SVN area, then svn commit.  You can
+double check that all the datacards are OK by running:
+
+```shell
+./double_check_svn_cards.sh
+```
+
