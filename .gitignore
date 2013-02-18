@@ -41,3 +41,5 @@ limits-*/
 log/
 condor.log
 tmp.root
+hcg_svn_vhtt/
+limits_2ndhiggs/
