@@ -16,6 +16,9 @@ m = fname_format.match(fname)
 if not m:
     raise Exception('filename %s not in the proper format' % fname)
 
-mass = int(m.group('mass'))
+real_mass = float(m.group('mass'))
+
+# round to nearest step of 5 GeV
+mass = int(5 * round(real_mass/5.))
 replaced_datacard = ''.join([line for line in open(fpath).readlines() if line == '' or not is_other_signal_shape_uncert(line.split()[0])])
 open(fpath, 'w').write(replaced_datacard)
