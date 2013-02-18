@@ -70,3 +70,32 @@ Do the following to make the signal injected plots.
 
 This example is for the UW cluster.  Omit the --condor option in the scripts to
 run on LXBatch.  
+
+Uploading to HCG SVN
+--------------------
+
+https://twiki.cern.ch/twiki/bin/view/CMS/HiggsCombinationMoriond2013#Inputs
+
+Checkout the vhtt area of the HCG SVN.  
+
+```shell
+svn co svn+ssh://svn.cern.ch/reps/cmshcg/trunk/moriond2013/searches/vhtt hcg/searches/vhtt
+svn co svn+ssh://svn.cern.ch/reps/cmshcg/trunk/moriond2013/couplings/vhtt hcg/couplings/vhtt
+```
+
+Generate all intermediate masses required by the HCG group.  Additionally,
+generate cards with the "Two Higgs format", where the SM Higgs 125 is considered
+as a background.
+
+```shell
+MASSLIST=coupling_masses.txt make limitdir
+MASSLIST=searches_masses.txt SECONDHIGGS=1 make limitdir
+```
+
+The cards with second Higgs appear in auxiliaries_2ndhiggs/.../. Now run
+
+```shell
+./copy_to_hcg_svn.sh
+```
+
+to copy the appropriate cards into the HCG SVN area, then svn commit.
