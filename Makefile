@@ -61,7 +61,7 @@ SHAPEFILE8=$(SETUP)/vhtt.inputs-sm-8TeV.root
 
 # Combine all 8TeV shape files
 $(SHAPEFILE8): $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2012.root horizontal_morphing.sh
-	hadd -f $@ $^
+	hadd -f $@ $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2012.root
 	# If we want all HCG group masses we need to do the morphing.
 	./horizontal_morphing.sh $@
 
@@ -69,7 +69,7 @@ $(SHAPEFILE8): $(COLLECT)/llt_2012.root $(COLLECT)/zh_2012.root $(COLLECT)/ltt_2
 # Combine all 7TeV shape files - we just take these from the HCP cards for 
 # LLT and ZH
 $(SHAPEFILE7)/vhtt.inputs-sm-7TeV.root: $(COLLECT)/llt_zh_hcp_7TeV.root $(COLLECT)/ltt_2011.root horizontal_morphing.sh
-	hadd -f $@ $^
+	hadd -f $@ $(COLLECT)/llt_zh_hcp_7TeV.root $(COLLECT)/ltt_2011.root 
 	# If we want all HCG group masses we need to do the morphing.
 	./horizontal_morphing.sh $@
 
