@@ -27,7 +27,7 @@ domorph()
   horizontal-morphing.py $1 \
     --categories="$3"\
     --samples="$2" \
-    --uncerts="$4" --masses="124,127" --step-size=0.1
+    --uncerts="$4" --masses="124,125,127" --step-size=0.1
 }
 
 # some magic to generate the uncertainy names which need to be morphed for
@@ -40,8 +40,10 @@ morph()
 {
   domorph $1 "WH{MASS},WH_hww{MASS}"  "${lltCategories}" ""
   domorph $1 "ZH_htt{MASS},ZH_hww{MASS}"  "${zhCategories}" ""
-  domorph $1 "WH_htt{MASS}"  "${lttCategories}" \
-    `make_bbb_names CMS_vhtt_8TeV_ett_shape_WH_htt_bin_ 10`,`make_bbb_names CMS_vhtt_8TeV_mtt_shape_WH_htt_bin_ 10`,`make_bbb_names CMS_vhtt_7TeV_ett_shape_WH_htt_bin_ 1`,`make_bbb_names CMS_vhtt_7TeV_mtt_shape_WH_htt_bin_ 1`,
+  #domorph $1 "WH_htt{MASS}"  "${lttCategories}" \
+    #`make_bbb_names CMS_vhtt_8TeV_ett_shape_WH_htt_bin_ 10`,`make_bbb_names CMS_vhtt_8TeV_mtt_shape_WH_htt_bin_ 10`,`make_bbb_names CMS_vhtt_7TeV_ett_shape_WH_htt_bin_ 1`,`make_bbb_names CMS_vhtt_7TeV_mtt_shape_WH_htt_bin_ 1`,
+  domorph $1 "WH{MASS}"  "${lttCategories}" \
+
 }
 
 morph $1
